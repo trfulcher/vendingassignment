@@ -1,4 +1,4 @@
-## Usage
+## Solution Details
 
 The project expects use of JDK11 and uses Maven as a build framework.
 Dependencies are predominantly Spring Boot and JUnit 5.
