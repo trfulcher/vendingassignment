@@ -128,4 +128,7 @@ Unit testing the algorithm - see `TestSalesTransaction.changePermutations` which
 with randomised input to give some breadth of testing.
 Property or fuzz testing like PIT Mutation testing would be an alternative.
 
+## Meta
 
+Code created by Tim Fulcher 22/02/22
+trfulcher@googlemail.com
