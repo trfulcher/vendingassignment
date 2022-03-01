@@ -103,7 +103,7 @@ $ curl -X POST "http://localhost:8080/makesale/9"
 
 ## Engineering
 Unit tests should give acceptable levels of coverage. My IDE indicates
-- Class 10%
+- Class 100%
 - Method 94%
 - Line 93%
 
