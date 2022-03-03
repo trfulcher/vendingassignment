@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Originally used for testing, core core to the solution
+ * Originally used for testing, not core to the solution
  */
 public class ExampleProductCatalogue {
 
