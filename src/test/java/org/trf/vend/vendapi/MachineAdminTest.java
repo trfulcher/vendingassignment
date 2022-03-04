@@ -2,6 +2,7 @@ package org.trf.vend.vendapi;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,6 +29,9 @@ class MachineAdminTest {
     @Autowired
     private MockMvc mvc;
 
+    @Captor
+    ArgumentCaptor<Map<Integer, Integer>> captor;
+
     @Test
     void viewKitty()  {
 
@@ -47,7 +51,6 @@ class MachineAdminTest {
     void initKitty()  throws  Exception {
 
        try {
-            ArgumentCaptor<Map<Integer, Integer>> captor = ArgumentCaptor.forClass(Map.class);
             Mockito.when(IFloat.status()).thenReturn(Map.of(50, 2, 2, 1, 1,5));
             mvc.perform(
                     MockMvcRequestBuilders.post("/admin/init?C50=2&C2=1&C1=5")
@@ -73,7 +76,7 @@ class MachineAdminTest {
     void initKittyWithBadCoins() {
 
         try {
-            ArgumentCaptor<Map<Integer, Integer>> captor = ArgumentCaptor.forClass(Map.class);
+           
 
             Mockito.when(IFloat.status()).thenReturn(Map.of());
             mvc.perform(

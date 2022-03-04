@@ -27,6 +27,8 @@ public class SequencePermutor {
      * @param index    necessary to handle recursion
      */
     private static void permutationsInternal(List<Integer> sequence, List<List<Integer>> results, int index) {
+
+
         if (index == sequence.size() - 1) {
             results.add(new ArrayList<>(sequence));
         }
