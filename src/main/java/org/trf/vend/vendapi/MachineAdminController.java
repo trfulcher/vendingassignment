@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.trf.vend.model.Denominations;
 import org.trf.vend.model.IFloat;
-import org.trf.vend.model.Kitty;
 import org.trf.vend.model.UnrecognisedDenominationException;
 
 import java.util.AbstractMap;

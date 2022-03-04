@@ -1,7 +1,6 @@
 package org.trf.vend.model;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Originally used for testing, not core to the solution

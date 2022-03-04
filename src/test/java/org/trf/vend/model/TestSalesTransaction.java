@@ -1,12 +1,19 @@
 package org.trf.vend.model;
 
-//import static org.junit.Assert.assertFalse;
-//import static org.junit.Assert.assertThrows;
-//import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,11 +32,12 @@ public class TestSalesTransaction {
 
         b = new Basket(); // empty
 
-        TreeMap<Integer, Integer> rk = Denominations.cointypes().stream().map(i -> new AbstractMap.SimpleEntry<Integer, Integer>(i, 1)).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue, (o1, o2) -> o1,
+        // one of each coin
+        TreeMap<Integer, Integer> initialCoins = Denominations.cointypes().stream().map(i -> new AbstractMap.SimpleEntry<Integer, Integer>(i, 1)).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue, (o1, o2) -> o1,
                 TreeMap::new));
 
         try {
-            k = new Kitty(rk);
+            k = new Kitty(initialCoins);
             st = new SalesTransactionService( k );
 
         } catch (UnrecognisedDenominationException e) {
@@ -39,11 +47,11 @@ public class TestSalesTransaction {
 
     @Test
     public void insufficientCash() {
-        b.addItem("AAA", 1); //
+        b.addItem("AAA", 1); // 13p
         IOfferedAmount oa = new OfferedAmount();
         try {
             oa.addCoin(10);
-            assertThrows(InsufficientFundsException.class, () -> st.execute(b, oa));
+            assertThrows(InsufficientFundsException.class, () -> st.execute(b.totalCost(), oa));
         } catch (UnrecognisedDenominationException e) {
             fail();
         }
@@ -60,7 +68,7 @@ public class TestSalesTransaction {
             oa.addCoin(10);
             oa.addCoin(2);
             oa.addCoin(1);
-            TransactionResult r = st.execute(b, oa);
+            TransactionResult r = st.execute(b.totalCost(), oa);
             assertTrue(r.getChange().values().isEmpty());
             assertTrue(r.isSuccess());
         } catch (InsufficientFundsException | UnrecognisedDenominationException e) {
@@ -78,8 +86,14 @@ public class TestSalesTransaction {
             IOfferedAmount oa = new OfferedAmount();
             oa.addCoin(100);
             oa.addCoin(50);
-            TransactionResult r = st.execute(b, oa);
+            TransactionResult r = st.execute(b.totalCost(), oa);
             assertFalse(r.getChange().values().isEmpty());
+            assertTrue( r.getChange().containsKey( 20 ) );
+            assertEquals( 1, r.getChange().get(20) );
+            assertTrue( r.getChange().containsKey( 10 ) );
+            assertEquals( 1, r.getChange().get(10) );
+            assertTrue( r.getChange().containsKey( 5 ) );
+            assertEquals( 1, r.getChange().get(5) );
             assertTrue( r.isSuccess() );
         } catch (InsufficientFundsException | UnrecognisedDenominationException e) {
             fail();
@@ -93,11 +107,12 @@ public class TestSalesTransaction {
 
         try {
 
-            b.addItem("EEE", 1); //
+            b.addItem("EEE", 1); // 25p
             IOfferedAmount oa = new OfferedAmount();
             oa.addCoin(20);
             oa.addCoin(20);
             oa.addCoin(1);
+            // 16 p required which will be fooled by the 5p in kitty variant 1
 
             // adjust kitty
             Map<Integer,Integer> p = Map.of( 2,2 );
@@ -105,8 +120,12 @@ public class TestSalesTransaction {
             k.withdraw( List.of(1));
 
             System.out.println( k.toString() );
-            TransactionResult r = st.execute(b, oa);
+            TransactionResult r = st.execute(b.totalCost(), oa);
             assertFalse(r.getChange().values().isEmpty());
+            assertTrue( r.getChange().containsKey( 10 ) );
+            assertEquals( 1, r.getChange().get(10) );
+            assertTrue( r.getChange().containsKey( 2 ) );
+            assertEquals( 3, r.getChange().get(2) );
             assertTrue( r.isSuccess() );
         } catch (InsufficientFundsException | UnrecognisedDenominationException e) {
             fail();
@@ -200,7 +219,7 @@ public class TestSalesTransaction {
             System.out.println( "k:"  + k );
             System.out.println( "oa:"  + oa );
 
-            TransactionResult r = st.execute(b, oa);
+            TransactionResult r = st.execute(b.totalCost(), oa);
 
             if( b.totalCost() == oa.currentTotal() ){
                 assertTrue( r.isSuccess() );
@@ -230,10 +249,8 @@ public class TestSalesTransaction {
         payment.put(2, 3);
         k.withdraw( List.of( 200,100,50,20, 10,1  ));
         k.deposit(payment);
-        int tgt = 13;
-
-
-
+        int tgt = 18;
+        assertEquals( tgt, k.totalHeld() );
     }
 
 }
